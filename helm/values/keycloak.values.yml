@@ -1,0 +1,33 @@
+postgresql:
+  enabled: false
+logging:
+  output: default
+  level: INFO
+externalDatabase:
+  port: 5432
+  ## @param keycloakConfigCli.configuration keycloak-config-cli realms configuration
+  ## NOTE: nil keys will be considered files to import locally
+  ## Example:
+  ## configuration:
+  ##   realm1.json: |
+  ##     {
+  ##       "realm": "realm1",
+  ##       "clients": []
+  ##     }
+  ##   realm2.yaml: |
+  ##     realm: realm2
+  ##     clients: []
+  ##
+keycloakConfigCli:
+  configuration: {}
+# httpRelativePath: /auth/
+# # Configure Keycloak for reverse proxy (NGINX Ingress)
+extraEnvVars:
+  - name: KC_PROXY_HEADERS
+    value: 'xforwarded' # Enable X-Forwarded-* headers parsing
+  - name: KC_HTTP_ENABLED
+    value: 'true' # Required for TLS termination at proxy
+  - name: KC_HOSTNAME_STRICT
+    value: 'false'
+  - name: KC_HOSTNAME_STRICT_HTTPS
+    value: 'false'

@@ -1,0 +1,7 @@
+controller:
+  service:
+    externalTrafficPolicy: Local
+  ingressClassResource:
+    name: internal-nginx # Different from the default "nginx"
+    controllerValue: k8s.io/internal-ingress-nginx
+  ingressClass: internal-nginx

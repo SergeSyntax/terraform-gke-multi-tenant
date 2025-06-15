@@ -1,0 +1,26 @@
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+defaultRules:
+  rules:
+    etcd: false
+    kubeScheduler: false
+alertmanager: # not required for this assignment
+  enabled: false
+
+# Prometheus storage configuration
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: premium-rwo # ssd
+          accessModes: ['ReadWriteOnce']
+          resources:
+            requests:
+              storage: 50Gi
+grafana:
+  defaultDashboardsTimezone: browser

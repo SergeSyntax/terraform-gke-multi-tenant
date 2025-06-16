@@ -140,8 +140,8 @@ chmod +x scripts/k8s.apply.sh
 
 ```bash
 # Set IP ranges for service access restrictions
-export KEYCLOAK_RESTRICTED_RANGE="192.115.85.127/32"
-export GRAFANA_RESTRICTED_RANGE="192.115.85.127/32"
+export KEYCLOAK_RESTRICTED_RANGE="xxx.xxx.xx.xxx/32"
+export GRAFANA_RESTRICTED_RANGE="xxx.xxx.xx.xxx/32"
 
 # Or use your current IP automatically
 export MY_IP=$(curl -s ifconfig.me)
@@ -243,6 +243,15 @@ terraform destroy
 ```
 
 ## 🏗️ Architecture Overview
+
+![Multi-Tenant GKE Architecture](docs/terraform-gke-multi-tenant-arch.drawio.png)
+
+### Architecture Components:
+
+- **3-Tier Application**: Keycloak with frontend UI, backend logic, and PostgreSQL database
+- **Monitoring Stack**: Prometheus metrics collection and Grafana dashboards
+- **Security**: TLS encryption via cert-manager and IP-based access control
+- **Infrastructure**: GKE cluster within VPC with proper networking and ingress controllers
 
 ### Multi-Tenant Structure
 

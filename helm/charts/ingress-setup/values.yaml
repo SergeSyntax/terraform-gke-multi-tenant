@@ -1,0 +1,20 @@
+# Default values for ingress-setup.
+
+# This is to override the chart name.
+nameOverride: ''
+fullnameOverride: ''
+
+certManager:
+  clusterIssuer: selfsigned-cluster-issuer
+
+# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
+ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: 'true'
+    nginx.ingress.kubernetes.io/force-ssl-redirect: 'true'
+  grafana:
+    allowedSourceRanges: null
+  keycloak:
+    allowedSourceRanges: null
+  argocd:
+    allowedSourceRanges: null

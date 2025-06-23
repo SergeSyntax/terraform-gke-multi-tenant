@@ -1,7 +1,13 @@
 locals {
+  public_cidr_range      = cidrsubnet(var.main_cidr, 5, 0)
+  private_cidr_range     = cidrsubnet(var.main_cidr, 3, 1)
+  service_ip_range       = cidrsubnet(var.main_cidr, 2, 1)
+  pod_ip_range           = cidrsubnet(var.main_cidr, 1, 1)
+  master_ipv4_cidr_block = "${split("/", cidrsubnet(var.main_cidr, 8, 12))[0]}/28"
+  iap_ssh_source_ranges  = ["35.235.240.0/20"] # Google Cloud Identity-Aware Proxy IP range for SSH
+
   cluster_secondary_range_name  = "k8s-pods"
   services_secondary_range_name = "k8s-services"
-  iap_ssh_source_ranges         = ["35.235.240.0/20"] # Google Cloud Identity-Aware Proxy IP range for SSH
 }
 
 resource "google_compute_network" "vpc" {
@@ -23,29 +29,28 @@ resource "google_compute_route" "default_route" {
 resource "google_compute_subnetwork" "public" {
   name                     = "${var.project_name}-public"
   project                  = var.project_id
-  ip_cidr_range            = var.public_cidr_range
+  ip_cidr_range            = local.public_cidr_range
   private_ip_google_access = true
   network                  = google_compute_network.vpc.id
   stack_type               = "IPV4_ONLY"
 }
 
-
 resource "google_compute_subnetwork" "private" {
   name                     = "${var.project_name}-private"
   project                  = var.project_id
-  ip_cidr_range            = var.private_cidr_range
+  ip_cidr_range            = local.private_cidr_range
   network                  = google_compute_network.vpc.id
-  private_ip_google_access = true
+  private_ip_google_access = true # the ability to access google services api
   stack_type               = "IPV4_ONLY"
 
   secondary_ip_range {
     range_name    = "k8s-pods"
-    ip_cidr_range = var.pod_ip_range
+    ip_cidr_range = local.pod_ip_range
   }
 
   secondary_ip_range {
     range_name    = "k8s-services"
-    ip_cidr_range = var.service_ip_range
+    ip_cidr_range = local.service_ip_range
   }
 }
 

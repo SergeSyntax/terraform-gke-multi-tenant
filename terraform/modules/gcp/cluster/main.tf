@@ -2,6 +2,7 @@
 resource "google_container_cluster" "gke" {
   name = "${var.project_name}-gke"
   # location                 = "us-central1-a"
+  project                  = var.project_id
   remove_default_node_pool = true
   initial_node_count       = 1
   network                  = var.network_self_link
@@ -49,6 +50,18 @@ resource "google_container_cluster" "gke" {
   #     display_name = "private-subnet"
   #   }
   # }
+}
+
+resource "null_resource" "kubectl_config" {
+  triggers = {
+    always_run = timestamp()
+  }
+
+  provisioner "local-exec" {
+    command = "gcloud container clusters get-credentials ${google_container_cluster.gke.name} --location=${google_container_cluster.gke.location} --project=${var.project_id}"
+  }
+
+  depends_on = [google_container_cluster.gke]
 }
 
 resource "google_service_account" "gke" {

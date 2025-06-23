@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  labels:
+    {{- include "ingress-setup.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.ingress }}
+    {{- toYaml .annotations | nindent 4 }}
+    {{- include "ingress-setup.certManagerAnnotation" $ | nindent 4 }}
+    {{- if .argocd.allowedSourceRanges }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ .argocd.allowedSourceRanges | join "," | quote }}
+    {{- end }}
+    {{- end }}
+spec:
+  ingressClassName: 'argocd-nginx'
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: argo-cd-argocd-server
+                port:
+                  number: 80

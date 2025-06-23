@@ -40,8 +40,10 @@ gcloud init
 ### Step 3: Create a bucket to use
 
 ```bash
-export BUCKET_NAME="${BUCKET_NAME:-"assign-management-terraform-state"}"
+export BUCKET_NAME="${BUCKET_NAME:-"assign-mt-terraform-state"}"
 gsutil mb "gs://${BUCKET_NAME}"
+# check that was created
+gsutil ls -L -b "gs://${BUCKET_NAME}" | grep "Location"
 ```
 
 ### Step 4: Enable plugins
@@ -49,6 +51,14 @@ gsutil mb "gs://${BUCKET_NAME}"
 ```bash
 gcloud components install gke-gcloud-auth-plugin
 ```
+
+**NOTE:** if you encounter: `Error: Failed to get existing workspaces: querying Cloud Storage failed: storage: bucket doesn't exist` you need to run
+
+```sh
+gcloud auth application-default login --project $PROJECT
+```
+
+to set default project and then will recognize the bucket existence
 
 ### Step 5: Configure Environment Variables
 
@@ -97,7 +107,7 @@ cp -r terraform/envs/dev/gcp/* terraform/envs/prod/tenant-name/
 chmod +x scripts/*.sh
 
 # Export the bucket name
-export BUCKET_NAME="${BUCKET_NAME:-"assign-management-terraform-state"}"
+export BUCKET_NAME="${BUCKET_NAME:-"assign-mt-terraform-state"}"
 
 # Create GKE cluster (this will run terraform automatically)
 ./scripts/cluster.create.sh

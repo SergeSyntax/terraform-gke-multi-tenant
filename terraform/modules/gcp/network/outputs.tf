@@ -15,3 +15,7 @@ output "private_subnet_self_link" {
   description = "The self-link of the private subnet"
   value       = google_compute_subnetwork.private.self_link
 }
+
+output "master_ipv4_cidr_block" {
+  value = local.master_ipv4_cidr_block
+}

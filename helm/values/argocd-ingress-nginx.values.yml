@@ -1,0 +1,7 @@
+controller:
+  service:
+    externalTrafficPolicy: Local
+  ingressClassResource:
+    name: argocd-nginx # Different from the default "nginx"
+    controllerValue: k8s.io/argocd-ingress-nginx
+  ingressClass: argocd-nginx

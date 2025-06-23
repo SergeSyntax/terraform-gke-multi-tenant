@@ -24,9 +24,12 @@ resource "google_project" "main" {
 resource "google_project_service" "api" {
   for_each = toset(local.apis)
 
-  project            = google_project.main.project_id
-  service            = each.key
-  disable_on_destroy = false
+  project = google_project.main.project_id
+  service = each.key
+
+  # I don't see a scenario when you disable a project and you want the service to keep running
+  disable_on_destroy         = false
+  disable_dependent_services = true
 
   depends_on = [google_project.main]
 }

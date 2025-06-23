@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: grafana
+  namespace: monitoring
+  labels:
+    {{- include "ingress-setup.labels" . | nindent 4 }}
+  annotations:
+    {{- with .Values.ingress }}
+    {{- toYaml .annotations | nindent 4 }}
+    {{- include "ingress-setup.certManagerAnnotation" $ | nindent 4 }}
+    {{- if .grafana.allowedSourceRanges }}
+    nginx.ingress.kubernetes.io/whitelist-source-range: {{ .grafana.allowedSourceRanges | join "," | quote }}
+    {{- end }}
+    {{- end }}
+spec:
+  ingressClassName: 'internal-nginx'
+  rules:
+    - http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: prometheus-grafana
+                port:
+                  number: 80

@@ -1,19 +1,13 @@
-variable "routing_mode" {
+variable "region" {
   type    = string
-  default = "REGIONAL"
-}
-
-# "PREMIUM", "STANDARD" # performance effect cost
-variable "network_tier" {
-  type    = string
-  default = "PREMIUM"
-}
-
-variable "project_id" {
-  type = string
+  default = "us-central1"
 }
 
 variable "project_name" {
+  type = string
+}
+
+variable "billing_account" {
   type = string
 }
 

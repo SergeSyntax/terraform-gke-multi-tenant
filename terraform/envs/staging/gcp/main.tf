@@ -1,3 +1,4 @@
+
 module "foundation" {
   source          = "../../../modules/gcp/foundation"
   project_name    = var.project_name
@@ -9,17 +10,12 @@ module "network" {
 
   project_id   = module.foundation.project_id
   project_name = var.project_name
-
-  main_cidr = var.main_cidr
+  main_cidr    = var.main_cidr
 
   depends_on = [module.foundation]
 }
 
 module "cluster" {
-  providers = {
-    google = google.google_project
-  }
-
   source                 = "../../../modules/gcp/cluster"
   project_id             = module.foundation.project_id
   project_name           = var.project_name

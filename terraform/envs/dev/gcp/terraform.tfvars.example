@@ -1,4 +1,4 @@
-# you can pass most of those vars via env with export TF_VAR_project_name="assign-management-dev-gcp" for CI/CD
+# you can pass most of those vars via env with export TF_VAR_project_name="assign-mt-dev-gcp" for CI/CD
 billing_account = "<BILLING_ACCOUNT_REQUIRED>"
-project_name    = "assign-management-dev-gcp"
+project_name    = "assign-mt-dev-gcp"
 main_cidr       = "10.1.0.0/19"

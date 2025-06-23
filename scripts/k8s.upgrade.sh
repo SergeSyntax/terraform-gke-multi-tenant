@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 export base_dir=$(git rev-parse --show-toplevel)
 
-export env="staging"
 export env="${env:-"dev"}"
 export tenant="${tenant:-"gcp"}"
 
@@ -24,60 +23,11 @@ export keycloak_password=$(echo $outputs | jq -r '.keycloak_password.value')
 export argocd_username="${argocd_username:-"admin"}"
 export argocd_password=$(echo $outputs | jq -r '.argocd_password.value')
 
-helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo add jetstack https://charts.jetstack.io
-helm repo add bitnami https://charts.bitnami.com/bitnami
-helm repo add argo https://argoproj.github.io/argo-helm
-
-helm repo update
-
-helm install -n cert-manager cert-manager jetstack/cert-manager --version v1.18.0 \
-  --values "${base_dir}/helm/values/cert-manager.values.yml" \
-  --create-namespace --wait --debug
-
-helm install -n monitoring prometheus \
-  prometheus-community/kube-prometheus-stack --version "74.0.0" \
-  --values "${base_dir}/helm/values/kube-prometheus-stack.values.yml" \
-  --set "grafana.adminUser=${grafana_username}" \
-  --set "grafana.adminPassword=${grafana_password}" \
-  --create-namespace --wait --debug
-
-helm install -n services keycloak \
-  bitnami/keycloak --version "24.7.4" \
-  --set auth.adminUser="${keycloak_username}" \
-  --set auth.adminPassword="${keycloak_password}" \
-  --set postgresql.enabled=false \
-  --set externalDatabase.host="${database_public_ip_address}" \
-  --set externalDatabase.port=5432 \
-  --set externalDatabase.database="postgres" \
-  --set externalDatabase.password="${database_password}" \
-  --set externalDatabase.user="${database_user}" \
-  --values "${base_dir}/helm/values/keycloak.values.yml" \
-  --create-namespace --wait --debug
-
-helm install -n argocd argocd-ingress \
-  ingress-nginx/ingress-nginx --version "4.12.3" \
-  --set "configs.secret.argocdServerAdminPassword=${argocd_password}" \
-  --values "${base_dir}/helm/values/argocd-ingress-nginx.values.yml" --wait --debug
-
-helm install -n services ingress \
-  ingress-nginx/ingress-nginx --version "4.12.3" \
-  --values "${base_dir}/helm/values/ingress-nginx.values.yml" --wait --debug
-
-helm install -n monitoring internal-ingress \
-  ingress-nginx/ingress-nginx --version "4.12.3" \
-  --values "${base_dir}/helm/values/internal-ingress-nginx.values.yml" --wait --debug
-
-helm install -n argocd argo-cd argo/argo-cd --version "8.1.1" \
-  --values "${base_dir}/helm/values/argo-cd.values.yaml" \
-  --create-namespace --wait --debug
-
 KEYCLOAK_RANGES="${KEYCLOAK_RESTRICTED_RANGE:-}"
 GRAFANA_RANGES="${GRAFANA_RESTRICTED_RANGE:-}"
 ARGOCD_RANGES="${ARGOCD_RESTRICTED_RANGE:-}"
 
-helm install -n default ingress-setup "${base_dir}/helm/charts/ingress-setup" \
+helm upgrade ingress-setup "${base_dir}/helm/charts/ingress-setup" \
   --set ingress.keycloak.allowedSourceRanges="${KEYCLOAK_RANGES}" \
   --set ingress.grafana.allowedSourceRanges="${GRAFANA_RANGES}" \
   --set ingress.argocd.allowedSourceRanges="${ARGOCD_RANGES}"

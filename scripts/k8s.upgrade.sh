@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 export base_dir=$(git rev-parse --show-toplevel)
 
+export env="staging"
 export env="${env:-"dev"}"
 export tenant="${tenant:-"gcp"}"
 
@@ -21,7 +22,6 @@ export keycloak_username="${keycloak_username:-"admin"}"
 export keycloak_password=$(echo $outputs | jq -r '.keycloak_password.value')
 
 export argocd_username="${argocd_username:-"admin"}"
-export argocd_password=$(echo $outputs | jq -r '.argocd_password.value')
 
 KEYCLOAK_RANGES="${KEYCLOAK_RESTRICTED_RANGE:-}"
 GRAFANA_RANGES="${GRAFANA_RESTRICTED_RANGE:-}"
@@ -35,6 +35,8 @@ helm upgrade ingress-setup "${base_dir}/helm/charts/ingress-setup" \
 argocd_external_ip=$(kubectl get svc/argocd-ingress-ingress-nginx-controller -n argocd -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 monitoring_external_ip=$(kubectl get svc/internal-ingress-ingress-nginx-controller -n monitoring -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
 services_external_ip=$(kubectl get svc/ingress-ingress-nginx-controller -n services -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+argocd_username="admin"
+argocd_password=$(kubectl get secret -n argocd argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d)
 
 echo "==================================="
 echo "SERVICE ACCESS INFORMATION"

@@ -22,9 +22,3 @@ output "keycloak_password" {
   value       = random_password.keycloak_password.result
   sensitive   = true
 }
-
-output "argocd_password" {
-  description = "Argo-CD admin password"
-  value       = random_password.argocd_password.result
-  sensitive   = true
-}

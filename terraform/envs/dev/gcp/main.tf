@@ -57,11 +57,3 @@ resource "random_password" "keycloak_password" {
   lower   = true
   numeric = true
 }
-
-resource "random_password" "argocd_password" {
-  length  = 8
-  special = false
-  upper   = true
-  lower   = true
-  numeric = true
-}
